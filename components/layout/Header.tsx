@@ -10,16 +10,10 @@ const Header = () => {
         <div className="flex flex-wrap items-center">
           <div className="flex-shrink-0 mr-5">
             <a href="/">
-              <Image
-                src="/images/logo.png"
-                height="40"
-                width="120"
-                alt="BuyItNow"
-              />
+              <div className=" text-blue-600 font-mono tracking-widest">Shopping Cart</div>
             </a>
           </div>
           <Search />
-
           <div className="flex items-center space-x-2 ml-auto">
             <Link
               href="/cart"
