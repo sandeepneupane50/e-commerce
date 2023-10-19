@@ -1,46 +1,73 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import StarRatings from "react-star-ratings"
 import getPriceQueryParams from '../../helpers/helpers'
+import { log } from "console";
+import { set } from "mongoose";
 const Filters = () => {
   const router = useRouter();
   let queryParams: any;
 
-  const[min, setMin] = useState('');
-  const[max, setMax] = useState('');
- 
+  let [sRatings, setSRatings] = useState([])
 
-  const handleClick =(checkbox:any) => {
-    if (typeof window !== "undefined") {
-      queryParams = new URLSearchParams(window.location.search);
-    }
-    const checkboxes = document.getElementsByName(checkbox.name)
+  const [min, setMin] = useState('');
+  const [max, setMax] = useState('');
 
-    // checkboxes.forEach((item)=> {
-    //   if( item !== checkbox) item.checked = false;
-    // });
-    // if(checkbox.checked === false) {
-    //   // delete query filter
-    //   queryParams.delete(checkbox.name)
-    // } else {
-      // set filter in query
-      if (queryParams.has(checkbox.name)) {
-        queryParams.set(checkbox.name, checkbox.value);
-      } else {
-        queryParams.append(checkbox.name, checkbox.value);
-      }
-    // }
-    const path = window.location.pathname + "?" + queryParams.toString();
+  const returnHome = () => {
+    // window.location = '/'
+    const path = window.location.pathname
     router.push(path);
   }
 
-  const ratingClick = () => {
+
+  setTimeout(() => {
+    console.log("dvagvcjsa");
+
+  }, 3000);
+
+
+  const handleClick = (checkbox: any) => {
+   
+      queryParams = new URLSearchParams(window.location.search);
     
+      // set filter in query
+      queryParams.delete('category');
+       queryParams.append(checkbox.name, checkbox.value);
+
+    const path = window.location.pathname + "?" + queryParams.toString();
+    router.push(path);
+  }
+ 
+  const ratingClick = (e: any) => {
+    const { value, checked } = e.target;
+    const numericValue = Number(value)    
+    queryParams = new URLSearchParams(window.location.search);
+    if (checked) {
+      setSRatings([...sRatings, numericValue])
+    } else {
+      setSRatings(sRatings.filter((e) => e !== numericValue))
+    }
+  }
+  
+  function ratings(){
+    queryParams = new URLSearchParams(window.location.search);
+    queryParams.delete('ratings')
+    sRatings.forEach((sRating) => {
+      queryParams.append("ratings", sRating);
+  });
+  const path = window.location.pathname + "?" + queryParams.toString();
+  router.push(path);
   }
 
-  function categoryHandler(checkBoxType:any, checkBoxValue: any) {
+  useEffect(() => {
+    ratings();
+  }),[sRatings]
+  
+
+
+  function categoryHandler(checkBoxType: any, checkBoxValue: any) {
     if (typeof window !== "undefined") {
       queryParams = new URLSearchParams(window.location.search);
       const value = queryParams.get(checkBoxType);
@@ -49,11 +76,11 @@ const Filters = () => {
     }
   }
 
-  const ratingsHandler = (checkBoxType:any, checkBoxValue: any) => {
+  const ratingsHandler = (checkBoxType: any, checkBoxValue: any) => {
     if (typeof window !== "undefined") {
       queryParams = new URLSearchParams(window.location.search);
       const value = queryParams.get(checkBoxType);
-      if(checkBoxValue === value) return true;
+      if (checkBoxValue === value) return true;
       return false
     }
   }
@@ -88,7 +115,7 @@ const Filters = () => {
               type="number"
               placeholder="Min"
               value={min}
-              onChange={(e)=> setMin(e.target.value)}   
+              onChange={(e) => setMin(e.target.value)}
             />
           </div>
 
@@ -99,13 +126,13 @@ const Filters = () => {
               type="number"
               placeholder="Max"
               value={max}
-              onChange={(e)=> setMax(e.target.value)}
+              onChange={(e) => setMax(e.target.value)}
             />
           </div>
 
           <div className="mb-4">
             <button className="px-1 py-2 text-center w-full inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
-            onClick={handleButtonClick}>
+              onClick={handleButtonClick}>
               Go
             </button>
           </div>
@@ -116,6 +143,22 @@ const Filters = () => {
         <h3 className="font-semibold mb-2">Category</h3>
 
         <ul className="space-y-1">
+
+          <li>
+            <label className="flex items-center">
+              <input
+                name="category"
+                type="radio"
+                // value=""
+                className="h-4 w-4"
+                // defaultChecked={categoryHandler("", "")}
+                onClick={returnHome}
+              />
+              <span className="ml-2 text-gray-500"> All</span>
+            </label>
+          </li>
+
+
           <li>
             <label className="flex items-center">
               <input
@@ -124,7 +167,7 @@ const Filters = () => {
                 value="Electronics"
                 className="h-4 w-4"
                 defaultChecked={categoryHandler("category", "Electronics")}
-                onClick={(e)=> handleClick(e.target)}
+                onClick={(e) => handleClick(e.target)}
               />
               <span className="ml-2 text-gray-500"> Electronics </span>
             </label>
@@ -137,7 +180,7 @@ const Filters = () => {
                 value="Laptops"
                 className="h-4 w-4"
                 defaultChecked={categoryHandler("category", "Laptops")}
-                onClick={(e)=> handleClick(e.target)}
+                onClick={(e) => handleClick(e.target)}
 
               />
               <span className="ml-2 text-gray-500"> Laptops </span>
@@ -151,7 +194,7 @@ const Filters = () => {
                 value="Toys"
                 className="h-4 w-4"
                 defaultChecked={categoryHandler("category", "Toys")}
-                onClick={(e)=> handleClick(e.target)}
+                onClick={(e) => handleClick(e.target)}
 
               />
               <span className="ml-2 text-gray-500"> Toys </span>
@@ -165,7 +208,7 @@ const Filters = () => {
                 value="Office"
                 className="h-4 w-4"
                 defaultChecked={categoryHandler("category", "Office")}
-                onClick={(e)=> handleClick(e.target)}
+                onClick={(e) => handleClick(e.target)}
               />
               <span className="ml-2 text-gray-500"> Office </span>
             </label>
@@ -178,7 +221,7 @@ const Filters = () => {
                 value="Beauty"
                 className="h-4 w-4"
                 defaultChecked={categoryHandler("category", "Beauty")}
-                onClick={(e)=> handleClick(e.target)}
+                onClick={(e) => handleClick(e.target)}
               />
               <span className="ml-2 text-gray-500"> Beauty </span>
             </label>
@@ -198,7 +241,7 @@ const Filters = () => {
                   value={rating}
                   className="h-4 w-4"
                   defaultChecked={ratingsHandler("ratings", `${rating}`)}
-                  onClick={(e)=> handleClick(e.target)}
+                  onClick={(e) => ratingClick(e)}
                 />
                 <span className="ml-2 text-gray-500">
                   {" "}
