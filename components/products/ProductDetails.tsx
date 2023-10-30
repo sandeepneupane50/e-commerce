@@ -1,14 +1,28 @@
 "use client"
 
-import React, { useRef } from 'react'
+import React, { useRef, useContext } from 'react'
 import StarRatings from 'react-star-ratings'
+import CartContext from '../../context/CartContext'
 
 const ProductDetails = ({product}: any) => {
+
+  const { addItemToCart } = useContext(CartContext)
 
   const imgRef = useRef(null);
 
 
   const inStock = product?.stock >= 1;
+
+  const addToCartHandler = () => {
+    addItemToCart({
+      product: product._id,
+      name: product.name,
+      price: product.price,
+      image: product.images[0].url,
+      stock: product.stock,
+      seller: product.seller,
+    })
+  }
 
   const setImgPreview = (url) => {
     imgRef.current.src = url;
@@ -80,7 +94,10 @@ const ProductDetails = ({product}: any) => {
               </p>
 
               <div className="flex flex-wrap gap-2 mb-5">
-                <button className="px-4 py-2 inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
+                <button className="px-4 py-2 inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+                  onClick={addToCartHandler}
+                  disabled={!inStock}
+                  >
                   <i className="fa fa-shopping-cart mr-2"></i>
                   Add to cart
                 </button>
