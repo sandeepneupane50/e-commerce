@@ -1,20 +1,99 @@
 "use client";
 
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import StarRatings from "react-star-ratings"
-
+import getPriceQueryParams from '../../helpers/helpers'
+import { log } from "console";
+import { set } from "mongoose";
 const Filters = () => {
-  let queryParams;
+  const router = useRouter();
+  let queryParams: any;
 
-  function checkHandler(checkBoxType, checkBoxValue) {
+  let [sRatings, setSRatings] = useState([])
+
+  const [min, setMin] = useState('');
+  const [max, setMax] = useState('');
+
+  const returnHome = () => {
+    // window.location = '/'
+    const path = window.location.pathname
+    router.push(path);
+  }
+
+
+  setTimeout(() => {
+    console.log("dvagvcjsa");
+
+  }, 3000);
+
+
+  const handleClick = (checkbox: any) => {
+   
+      queryParams = new URLSearchParams(window.location.search);
+    
+      // set filter in query
+      queryParams.delete('category');
+       queryParams.append(checkbox.name, checkbox.value);
+
+    const path = window.location.pathname + "?" + queryParams.toString();
+    router.push(path);
+  }
+ 
+  const ratingClick = (e: any) => {
+    const { value, checked } = e.target;
+    const numericValue = Number(value)    
+    queryParams = new URLSearchParams(window.location.search);
+    if (checked) {
+      setSRatings([...sRatings, numericValue])
+    } else {
+      setSRatings(sRatings.filter((e) => e !== numericValue))
+    }
+  }
+  
+  function ratings(){
+    queryParams = new URLSearchParams(window.location.search);
+    queryParams.delete('ratings')
+    sRatings.forEach((sRating) => {
+      queryParams.append("ratings", sRating);
+  });
+  const path = window.location.pathname + "?" + queryParams.toString();
+  router.push(path);
+  }
+
+  useEffect(() => {
+    ratings();
+  }),[sRatings]
+  
+
+
+  function categoryHandler(checkBoxType: any, checkBoxValue: any) {
     if (typeof window !== "undefined") {
       queryParams = new URLSearchParams(window.location.search);
-    }
-
-    if (typeof window !== "undefined") {
       const value = queryParams.get(checkBoxType);
       if (checkBoxValue === value) return true;
       return false;
+    }
+  }
+
+  const ratingsHandler = (checkBoxType: any, checkBoxValue: any) => {
+    if (typeof window !== "undefined") {
+      queryParams = new URLSearchParams(window.location.search);
+      const value = queryParams.get(checkBoxType);
+      if (checkBoxValue === value) return true;
+      return false
+    }
+  }
+
+  const handleButtonClick = () => {
+    if (typeof window !== "undefined") {
+      queryParams = new URLSearchParams(window.location.search);
+
+      queryParams = getPriceQueryParams(queryParams, "min", min);
+      queryParams = getPriceQueryParams(queryParams, "max", max);
+
+      const path = window.location.pathname + "?" + queryParams.toString();
+      router.push(path);
     }
   }
 
@@ -35,6 +114,8 @@ const Filters = () => {
               className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
               type="number"
               placeholder="Min"
+              value={min}
+              onChange={(e) => setMin(e.target.value)}
             />
           </div>
 
@@ -44,11 +125,14 @@ const Filters = () => {
               className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
               type="number"
               placeholder="Max"
+              value={max}
+              onChange={(e) => setMax(e.target.value)}
             />
           </div>
 
           <div className="mb-4">
-            <button className="px-1 py-2 text-center w-full inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
+            <button className="px-1 py-2 text-center w-full inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+              onClick={handleButtonClick}>
               Go
             </button>
           </div>
@@ -59,14 +143,31 @@ const Filters = () => {
         <h3 className="font-semibold mb-2">Category</h3>
 
         <ul className="space-y-1">
+
           <li>
             <label className="flex items-center">
               <input
                 name="category"
-                type="checkbox"
+                type="radio"
+                // value=""
+                className="h-4 w-4"
+                // defaultChecked={categoryHandler("", "")}
+                onClick={returnHome}
+              />
+              <span className="ml-2 text-gray-500"> All</span>
+            </label>
+          </li>
+
+
+          <li>
+            <label className="flex items-center">
+              <input
+                name="category"
+                type="radio"
                 value="Electronics"
                 className="h-4 w-4"
-                defaultChecked={checkHandler("category", "Electronics")}
+                defaultChecked={categoryHandler("category", "Electronics")}
+                onClick={(e) => handleClick(e.target)}
               />
               <span className="ml-2 text-gray-500"> Electronics </span>
             </label>
@@ -75,10 +176,12 @@ const Filters = () => {
             <label className="flex items-center">
               <input
                 name="category"
-                type="checkbox"
+                type="radio"
                 value="Laptops"
                 className="h-4 w-4"
-                defaultChecked={checkHandler("category", "Laptops")}
+                defaultChecked={categoryHandler("category", "Laptops")}
+                onClick={(e) => handleClick(e.target)}
+
               />
               <span className="ml-2 text-gray-500"> Laptops </span>
             </label>
@@ -87,10 +190,12 @@ const Filters = () => {
             <label className="flex items-center">
               <input
                 name="category"
-                type="checkbox"
+                type="radio"
                 value="Toys"
                 className="h-4 w-4"
-                defaultChecked={checkHandler("category", "Toys")}
+                defaultChecked={categoryHandler("category", "Toys")}
+                onClick={(e) => handleClick(e.target)}
+
               />
               <span className="ml-2 text-gray-500"> Toys </span>
             </label>
@@ -99,10 +204,11 @@ const Filters = () => {
             <label className="flex items-center">
               <input
                 name="category"
-                type="checkbox"
+                type="radio"
                 value="Office"
                 className="h-4 w-4"
-                defaultChecked={checkHandler("category", "Office")}
+                defaultChecked={categoryHandler("category", "Office")}
+                onClick={(e) => handleClick(e.target)}
               />
               <span className="ml-2 text-gray-500"> Office </span>
             </label>
@@ -111,10 +217,11 @@ const Filters = () => {
             <label className="flex items-center">
               <input
                 name="category"
-                type="checkbox"
+                type="radio"
                 value="Beauty"
                 className="h-4 w-4"
-                defaultChecked={checkHandler("category", "Beauty")}
+                defaultChecked={categoryHandler("category", "Beauty")}
+                onClick={(e) => handleClick(e.target)}
               />
               <span className="ml-2 text-gray-500"> Beauty </span>
             </label>
@@ -133,14 +240,15 @@ const Filters = () => {
                   type="checkbox"
                   value={rating}
                   className="h-4 w-4"
-                  defaultChecked={checkHandler("ratings", `${rating}`)}
+                  defaultChecked={ratingsHandler("ratings", `${rating}`)}
+                  onClick={(e) => ratingClick(e)}
                 />
                 <span className="ml-2 text-gray-500">
                   {" "}
                   <StarRatings
                     rating={5}
                     starRatedColor="#ffb829"
-                    numberOfStars={5}
+                    numberOfStars={rating}
                     starDimension="20px"
                     starSpacing="2px"
                     name="rating"

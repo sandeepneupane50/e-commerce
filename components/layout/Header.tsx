@@ -1,25 +1,24 @@
-import React from "react";
+"use client";
+
+import React, {useContext} from "react";
 import Link from "next/link";
 import Search from "./Search"
-import Image from "next/image";
+import CartContext from "@/context/CartContext";
 
 const Header = () => {
+
+    const { cart } = useContext(CartContext);
+    const cartItems = cart?.cartItems
   return (
     <header className="bg-white py-2 border-b">
       <div className="container max-w-screen-xl mx-auto px-4">
         <div className="flex flex-wrap items-center">
           <div className="flex-shrink-0 mr-5">
             <a href="/">
-              <Image
-                src="/images/logo.png"
-                height="40"
-                width="120"
-                alt="BuyItNow"
-              />
+              <div className=" text-blue-600 font-mono tracking-widest">Shopping Cart</div>
             </a>
           </div>
           <Search />
-
           <div className="flex items-center space-x-2 ml-auto">
             <Link
               href="/cart"
@@ -27,7 +26,7 @@ const Header = () => {
             >
               <i className="text-gray-400 w-5 fa fa-shopping-cart"></i>
               <span className="hidden lg:inline ml-1">
-                Cart (<b>0</b>)
+                Cart (<b>{cartItems?.length || 0}</b>)
               </span>
             </Link>
             <Link
