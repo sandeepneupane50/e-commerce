@@ -25,7 +25,7 @@ const Cart = () => {
         addItemToCart(item)
     }
 
-    const amtWithOutTax = (cart?.cartItems?.reduce((acc,item) => acc + item.quantity * item.price, 0)).toFixed(2);
+    const amtWithOutTax = cart?.cartItems?.reduce((acc,item) => acc + item.quantity * item.price, 0).toFixed(2);
 
     const taxAmt = ( amtWithOutTax * 0.13).toFixed(2);
 

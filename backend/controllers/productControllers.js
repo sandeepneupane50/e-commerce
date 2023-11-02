@@ -33,7 +33,6 @@ export const getProducts = async (req, res, next ) => {
 }
 
 export const getProduct = async (req, res, next ) => {
-    // console.log(req.query.id)
     const product = await Product.findById(req.query.id);
 
     if(!product){

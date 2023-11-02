@@ -22,11 +22,6 @@ const Filters = () => {
   }
 
 
-  setTimeout(() => {
-    console.log("dvagvcjsa");
-
-  }, 3000);
-
 
   const handleClick = (checkbox: any) => {
    
