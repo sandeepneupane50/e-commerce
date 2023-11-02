@@ -14,10 +14,7 @@ const getProducts = async (searchParams: any) => {
     "price[lte]": searchParams.max,
   } 
 
-  const searchQuery = queryString.stringify(urlParams)
-
-  console.log("searchQuery",searchQuery);
-  
+  const searchQuery = queryString.stringify(urlParams)  
 
   const  { data }  = await axios.get(`${process.env.API_URL}/api/products?${searchQuery}`);
   return data;
